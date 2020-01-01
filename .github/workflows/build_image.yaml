@@ -1,0 +1,43 @@
+name: Build Model Container
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+
+    - name: Check out
+      uses: actions/checkout@v1
+
+    - name: Download model
+      uses: chanwit/action-s3-downloader
+      with:
+        awsAccessKeyId: ${{ secrets.MINIO_ACCESS_KEY_ID }}
+        awsSecretAccessKey: ${{ secrets.MINIO_SECRET_ACCESS_KEY }}
+        s3Endpoint: ${{ secrets.MINIO_URL }}
+        s3BucketAndFile: /mlops-profile-titanic/model.joblib
+
+    - name: Login into Docker registry
+      uses: azure/docker-login@v1
+      with:
+        username: ${{ secrets.REGISTRY_USERNAME }}
+        password: ${{ secrets.REGISTRY_PASSWORD }}
+
+    - name: Build, tag and push the base image
+      run: |
+        #
+        # setup variables
+        #
+        export IMAGE_NAME="chanwit/titanic-model"
+        export IMAGE_TAG=$(date "+%Y%m%d%H%M%S")
+        #
+        # actions
+        #
+        docker build --build-arg model=model.joblib -t ${IMAGE_NAME}:latest .
+        docker tag      ${IMAGE_NAME}:latest ${IMAGE_NAME}:${IMAGE_TAG}
+        docker push     ${IMAGE_NAME}:${IMAGE_TAG}
+        docker push     ${IMAGE_NAME}:latest
