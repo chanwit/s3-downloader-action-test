@@ -14,7 +14,7 @@ jobs:
       uses: actions/checkout@v1
 
     - name: Download model
-      uses: chanwit/action-s3-downloader
+      uses: chanwit/action-s3-downloader@master
       with:
         awsAccessKeyId: ${{ secrets.MINIO_ACCESS_KEY_ID }}
         awsSecretAccessKey: ${{ secrets.MINIO_SECRET_ACCESS_KEY }}
