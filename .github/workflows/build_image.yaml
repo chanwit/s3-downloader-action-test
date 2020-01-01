@@ -33,7 +33,7 @@ jobs:
         # setup variables
         #
         export IMAGE_NAME="chanwit/titanic-model"
-        export IMAGE_TAG=$(date "+%Y%m%d%H%M%S")
+        export IMAGE_TAG=v$(date "+%Y%m%d%H%M%S")
         #
         # actions
         #
